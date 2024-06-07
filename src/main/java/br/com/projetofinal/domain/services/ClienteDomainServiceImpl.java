@@ -2,6 +2,7 @@ package br.com.projetofinal.domain.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import br.com.projetofinal.domain.dtos.ClienteRequestDto;
 import br.com.projetofinal.domain.dtos.ClienteResponseDto;
 import br.com.projetofinal.domain.entities.Cliente;
 import br.com.projetofinal.domain.entities.Endereco;
+import br.com.projetofinal.domain.exception.ClienteNaoEncontradoException;
 import br.com.projetofinal.domain.exception.CpfJaCadastradoException;
 import br.com.projetofinal.domain.interfaces.ClienteDomainService;
 import br.com.projetofinal.infrastructure.repository.ClienteRepository;
@@ -35,10 +37,7 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 
 		Cliente cliente = modelMapper.map(dto, Cliente.class);
 		cliente.setIdCliente(UUID.randomUUID());
-
-		if (cliente.getEnderecos() == null) {
-			cliente.setEnderecos(new ArrayList<>());
-		}
+		cliente.setEnderecos(new ArrayList<>());
 
 		Endereco endereco = modelMapper.map(dto.getEndereco(), Endereco.class);
 		endereco.setCliente(cliente);
@@ -54,6 +53,12 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 	@Override
 	public ClienteResponseDto put(UUID id, ClienteRequestDto dto) {
 
+		Optional<Cliente> opcaoCliente = clienteRepository.findById(id);
+
+		if (opcaoCliente.isEmpty()) {
+			throw new ClienteNaoEncontradoException();
+		}
+		
 		Cliente cliente = clienteRepository.findById(id).get();
 		modelMapper.map(dto, cliente);
 
@@ -85,6 +90,12 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 	@Override
 	public ClienteResponseDto getId(UUID id) {
 
+		Optional<Cliente> opcaoCliente = clienteRepository.findById(id);
+
+		if (opcaoCliente.isEmpty()) {
+			throw new ClienteNaoEncontradoException();
+		}
+
 		Cliente cliente = clienteRepository.getClienteAndEnderecoId(id);
 
 		return modelMapper.map(cliente, ClienteResponseDto.class);
@@ -93,6 +104,12 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 	@Override
 	public ClienteResponseDto delete(UUID id) {
 
+		Optional<Cliente> opcaoCliente = clienteRepository.findById(id);
+
+		if (opcaoCliente.isEmpty()) {
+			throw new ClienteNaoEncontradoException();
+		}
+		
 		Cliente cliente = clienteRepository.findById(id).get();
 
 		clienteRepository.delete(cliente);
