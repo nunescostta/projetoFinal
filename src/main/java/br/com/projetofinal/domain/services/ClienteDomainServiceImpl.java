@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 
 import br.com.projetofinal.domain.dtos.ClienteRequestDto;
 import br.com.projetofinal.domain.dtos.ClienteResponseDto;
+import br.com.projetofinal.domain.dtos.EmailDto;
 import br.com.projetofinal.domain.entities.Cliente;
 import br.com.projetofinal.domain.entities.Endereco;
 import br.com.projetofinal.domain.exception.ClienteNaoEncontradoException;
 import br.com.projetofinal.domain.exception.CpfJaCadastradoException;
 import br.com.projetofinal.domain.interfaces.ClienteDomainService;
+import br.com.projetofinal.infrastructure.components.EmailProducerComponent;
 import br.com.projetofinal.infrastructure.repository.ClienteRepository;
 
 @Service
@@ -27,6 +29,9 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 
 	@Autowired
 	private ClienteRepository clienteRepository;
+
+	@Autowired
+	private EmailProducerComponent emailProducerComponent;
 
 	@Override
 	public ClienteResponseDto post(ClienteRequestDto dto) {
@@ -46,7 +51,29 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 
 		clienteRepository.save(cliente);
 
+		enviarEmailDeBoasVindas(cliente);
+
 		return modelMapper.map(cliente, ClienteResponseDto.class);
+
+	}
+
+	private void enviarEmailDeBoasVindas(Cliente cliente) {
+		String to = cliente.getEmail();
+		String subject = "Seja bem vindo ao sistema de Endereços - Projeto Final.";
+		String body = "Olá, " + cliente.getNome() + "\nSua conta foi criada com sucesso" + "\nSeja bem vindo!"
+				+ "\n\nAtt, " + "\nJean Nunes";
+
+		EmailDto dto = new EmailDto();
+		dto.setDestinatario(to);
+		dto.setAssunto(subject);
+		dto.setMensagem(body);
+
+		try {
+			emailProducerComponent.sendMessage(dto);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -58,7 +85,7 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 		if (opcaoCliente.isEmpty()) {
 			throw new ClienteNaoEncontradoException();
 		}
-		
+
 		Cliente cliente = clienteRepository.findById(id).get();
 		modelMapper.map(dto, cliente);
 
@@ -109,7 +136,7 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 		if (opcaoCliente.isEmpty()) {
 			throw new ClienteNaoEncontradoException();
 		}
-		
+
 		Cliente cliente = clienteRepository.findById(id).get();
 
 		clienteRepository.delete(cliente);

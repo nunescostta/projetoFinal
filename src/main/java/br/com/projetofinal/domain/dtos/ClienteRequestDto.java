@@ -2,6 +2,8 @@ package br.com.projetofinal.domain.dtos;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -24,6 +26,7 @@ public class ClienteRequestDto {
 	@NotBlank(message = "Por favor, informe um Cpf")
 	private String cpf;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date dataNascimento;
 
 	private EnderecoRequestDto endereco;

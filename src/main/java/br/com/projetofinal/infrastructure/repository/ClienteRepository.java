@@ -22,5 +22,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 	@Query("select distinct c from Cliente c left join fetch c.enderecos order by c.nome")
 	List<Cliente> getClienteOrderNome();
 	
+	
 
 }
