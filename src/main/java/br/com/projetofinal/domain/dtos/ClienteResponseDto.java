@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 
 @Data
@@ -17,6 +19,7 @@ public class ClienteResponseDto {
 
 	private String cpf;
 
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date dataNascimento;
 
     private List<EnderecoResponseDto> enderecos;

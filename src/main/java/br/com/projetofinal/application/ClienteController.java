@@ -1,4 +1,4 @@
-package br.com.projetofinal.application.controllers;
+package br.com.projetofinal.application;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +19,7 @@ import br.com.projetofinal.domain.dtos.ClienteResponseDto;
 import br.com.projetofinal.domain.interfaces.ClienteDomainService;
 import jakarta.validation.Valid;
 
-@RequestMapping("api/clientes")
+@RequestMapping("/api/clientes")
 @RestController
 public class ClienteController {
 
@@ -27,7 +27,7 @@ public class ClienteController {
 	private ClienteDomainService clienteDomainService;
 
 	@PostMapping("criar")
-	public ResponseEntity<ClienteResponseDto> post(@RequestBody @Valid ClienteRequestDto dto) {
+	public ResponseEntity <ClienteResponseDto> post(@RequestBody @Valid ClienteRequestDto dto) {
 
 		ClienteResponseDto response = clienteDomainService.post(dto);
 
@@ -60,11 +60,11 @@ public class ClienteController {
 
 	}
 
-	@DeleteMapping("excluir{id}")
+	@DeleteMapping("excluir/{id}")
 	public ResponseEntity<ClienteResponseDto> excluir(@PathVariable UUID id) {
 
 		ClienteResponseDto response = clienteDomainService.delete(id);
-		
-		return ResponseEntity.status(200).body(response);
+
+		return ResponseEntity.status(204).body(response);
 	}
 }
